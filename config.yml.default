@@ -1,0 +1,16 @@
+# This file should be duplicated and renamed config.yml.
+# The application will look for this file based on the value defined in config/config.go
+
+
+# Configuration for the webserver
+server:
+    host: ""
+    port: ""
+
+# Database configuation
+database:
+    user: ""
+    password: ""
+    host: ""
+    port: ""
+    database: ""
