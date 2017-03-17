@@ -14,3 +14,6 @@ database:
     host: ""
     port: ""
     database: ""
+
+# Secret is used for encryption...change it
+secret: ""

@@ -1,5 +1,12 @@
 package models
 
+import (
+	"database/sql"
+	"errors"
+	"strings"
+	"time"
+)
+
 type Submission struct{
 	ID            string `json:"id"`
 	CollectionID  string `json:"collectionId"`
@@ -31,4 +38,47 @@ func GetSubmission(id string) (*Submission, error) {
 	}
 
 	return &submission, nil
+}
+
+func InsertSubmission(requestBody []byte, collectionId string) (*Submission, error) {
+	var submission Submission
+
+	if ! hasCollectionId(collectionId) {
+		return &submission, errors.New("Invalid collectionId.")
+	}
+
+	id := newUUID()
+	data := string(requestBody)
+	dateCreated := getTimestamp()
+	title := strings.Join([]string{"Submission: ", time.Now().String()}, "")
+
+	replacer := strings.NewReplacer("\n", "", "\t", "")
+	data = replacer.Replace(data)
+
+	db := connectToDB()
+	defer db.Close()
+
+	stmt, _ := db.Prepare("	INSERT INTO submissions (`id`, `title`, `collectionId`, `dateCreated`, `data`) VALUES (?, ?, ?, ?, ?)")
+	_, err := stmt.Exec(id, title, collectionId, dateCreated, data)
+
+	if err != nil {
+		return &submission, err
+	}
+
+	submission.ID = id
+	submission.Title = title
+	submission.CollectionID = collectionId
+	submission.DateCreated = dateCreated
+	submission.Data = data
+
+	return &submission, nil
+}
+
+func hasCollectionId(collectionId string) bool {
+	var output interface{}
+
+	db := connectToDB(); defer db.Close()
+	err := db.QueryRow("SELECT `id` FROM collections WHERE id=?", collectionId).Scan(&output)
+
+	return err != sql.ErrNoRows
 }

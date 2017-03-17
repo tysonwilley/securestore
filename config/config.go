@@ -20,6 +20,7 @@ type parametersBag struct{
 		Port     string `yaml:port`
 		Database string `yaml:database`
 	}
+	Secret string
 }
 
 var configPath string = fmt.Sprintf("%s/Work/go/src/secureStore/config.yml", os.Getenv("HOME"))

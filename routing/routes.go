@@ -27,7 +27,7 @@ var routes = Routes{
 	},
 	Route{
 		"POSTSubmission",
-		"/submission/",
+		"/submission/{collectionId}",
 		"POST",
 		handlers.PostSubmissionAction,
 	},
