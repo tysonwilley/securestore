@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strings"
 	"time"
+	"secureStore/encryption"
 )
 
 type Submission struct{
@@ -28,7 +29,6 @@ func GetSubmission(id string) (*Submission, error) {
 		&submission.ID,
 		&submission.Title,
 		&submission.CollectionID,
-		&submission.Status,
 		&submission.DateCreated,
 		&submission.Data,
 	)
@@ -36,6 +36,8 @@ func GetSubmission(id string) (*Submission, error) {
 	if err != nil {
 		return &submission, err
 	}
+
+	submission.Data = encryption.Decrypt(submission.Data)
 
 	return &submission, nil
 }
@@ -48,12 +50,13 @@ func InsertSubmission(requestBody []byte, collectionId string) (*Submission, err
 	}
 
 	id := newUUID()
-	data := string(requestBody)
 	dateCreated := getTimestamp()
 	title := strings.Join([]string{"Submission: ", time.Now().String()}, "")
 
 	replacer := strings.NewReplacer("\n", "", "\t", "")
+	data := string(requestBody)
 	data = replacer.Replace(data)
+	data = encryption.Encrypt(data)
 
 	db := connectToDB()
 	defer db.Close()
@@ -80,5 +83,5 @@ func hasCollectionId(collectionId string) bool {
 	db := connectToDB(); defer db.Close()
 	err := db.QueryRow("SELECT `id` FROM collections WHERE id=?", collectionId).Scan(&output)
 
-	return err != sql.ErrNoRows
+	return sql.ErrNoRows != err
 }
