@@ -16,7 +16,6 @@ var nonce []byte = make([]byte, 12)
 
 func init() {
 	_, err := io.ReadFull(rand.Reader, nonce)
-	//_, err := io.ReadFull(strings.NewReader(string(secret)), nonce)
 	checkError(err)
 }
 
