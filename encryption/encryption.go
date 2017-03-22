@@ -4,17 +4,17 @@ import (
 	"secureStore/config"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
+	"encoding/base64"
 	"log"
 	"io"
-	_"strings"
-	"encoding/base64"
-	"crypto/rand"
 )
 
 var secret []byte = []byte(config.Parameters.Secret)
-var nonce []byte = make([]byte, 12)
+var nonce []byte  = make([]byte, 12)
 
 func init() {
+	// Initialize nonce value
 	_, err := io.ReadFull(rand.Reader, nonce)
 	checkError(err)
 }
@@ -24,19 +24,15 @@ func Encrypt(value string) string {
 	block, err  := aes.NewCipher(secret); checkError(err)
 	aesgcm, err := cipher.NewGCM(block); checkError(err)
 	ciphertext  := aesgcm.Seal(nil, nonce, plaintext, nil)
-
-	// Base64 Encode
 	finalOutput := base64.StdEncoding.EncodeToString(ciphertext)
 
 	return finalOutput
 }
 
 func Decrypt(value string) string {
-	var ciphertext []byte
-
 	// Decode Base64
 	decoded, err := base64.StdEncoding.DecodeString(value); checkError(err)
-	ciphertext = []byte(decoded)
+	ciphertext := []byte(decoded)
 
 	// Decrypt
 	block, err      := aes.NewCipher(secret); checkError(err)
@@ -45,7 +41,6 @@ func Decrypt(value string) string {
 
 	return string(plaintext)
 }
-
 
 func checkError(err error) {
 	if err != nil {
