@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 	"secureStore/encryption"
+	"fmt"
 )
 
 type Submission struct{
@@ -49,9 +50,9 @@ func InsertSubmission(requestBody []byte, collectionId string) (*Submission, err
 		return &submission, errors.New("Invalid collectionId.")
 	}
 
-	id := newUUID()
+	id          := newUUID()
 	dateCreated := getTimestamp()
-	title := strings.Join([]string{"Submission: ", time.Now().String()}, "")
+	title       := fmt.Sprintf("Submission: %s", time.Now().String())
 
 	replacer := strings.NewReplacer("\n", "", "\t", "")
 	data := string(requestBody)
@@ -62,17 +63,17 @@ func InsertSubmission(requestBody []byte, collectionId string) (*Submission, err
 	defer db.Close()
 
 	stmt, _ := db.Prepare("	INSERT INTO submissions (`id`, `title`, `collectionId`, `dateCreated`, `data`) VALUES (?, ?, ?, ?, ?)")
-	_, err := stmt.Exec(id, title, collectionId, dateCreated, data)
+	_, err  := stmt.Exec(id, title, collectionId, dateCreated, data)
 
 	if err != nil {
 		return &submission, err
 	}
 
-	submission.ID = id
-	submission.Title = title
+	submission.ID           = id
+	submission.Title        = title
 	submission.CollectionID = collectionId
-	submission.DateCreated = dateCreated
-	submission.Data = data
+	submission.DateCreated  = dateCreated
+	submission.Data         = data
 
 	return &submission, nil
 }
