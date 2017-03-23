@@ -8,7 +8,7 @@ func GetSubmissions(collectionId string) (*Submissions, error) {
 
 	submissions := make(Submissions, 0)
 
-	rows, err := db.Query("SELECT * FROM submissions WHERE collectionId =?", collectionId)
+	rows, err := db.Query("SELECT `id`, `title`, `dateCreated` FROM submissions WHERE collectionId =?", collectionId)
 
 	if err != nil {
 		return &submissions, err
@@ -20,10 +20,7 @@ func GetSubmissions(collectionId string) (*Submissions, error) {
 		rows.Scan(
 			&submission.ID,
 			&submission.Title,
-			&submission.CollectionID,
-			&submission.Status,
 			&submission.DateCreated,
-			&submission.Data,
 		)
 
 		submissions = append(submissions, submission)
