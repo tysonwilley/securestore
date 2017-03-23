@@ -38,7 +38,7 @@ func GetSubmission(id string) (*Submission, error) {
 		return &submission, err
 	}
 
-	submission.Data = encryption.Decrypt(submission.Data)
+	submission.Data = encryption.Decrypt(submission.Data, submission.ID)
 
 	return &submission, nil
 }
@@ -57,7 +57,7 @@ func InsertSubmission(requestBody []byte, collectionId string) (*Submission, err
 	replacer := strings.NewReplacer("\n", "", "\t", "")
 	data := string(requestBody)
 	data = replacer.Replace(data)
-	data = encryption.Encrypt(data)
+	data = encryption.Encrypt(data, id)
 
 	db := connectToDB()
 	defer db.Close()
