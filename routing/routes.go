@@ -37,4 +37,23 @@ var routes = Routes{
 		"GET",
 		handlers.GetSubmissionsAction,
 	},
+
+	Route{
+		"GETCollection",
+		"/collection/{collectionId}",
+		"GET",
+		handlers.GetCollectionAction,
+	},
+	Route{
+		"POSTCollection",
+		"/collection/",
+		"POST",
+		handlers.PostCollectionAction,
+	},
+	Route{
+		"DELETECollection",
+		"/collection/{collectionId}",
+		"DELETE",
+		handlers.DeleteCollectionAction,
+	},
 }
