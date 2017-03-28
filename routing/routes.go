@@ -19,6 +19,9 @@ var routes = Routes{
 		"GET",
 		handlers.IndexAction,
 	},
+
+	// Submissions
+	// ======================================
 	Route{
 		"GETSubmission",
 		"/submission/{submissionId}",
@@ -32,12 +35,20 @@ var routes = Routes{
 		handlers.PostSubmissionAction,
 	},
 	Route{
+		"DELETESubmission",
+		"/submission/{submissionId}",
+		"DELETE",
+		handlers.DeleteSubmissionAction,
+	},
+	Route{
 		"GETSubmissions",
 		"/submissions/",
 		"GET",
 		handlers.GetSubmissionsAction,
 	},
 
+	// Collections
+	// ======================================
 	Route{
 		"GETCollection",
 		"/collection/{collectionId}",

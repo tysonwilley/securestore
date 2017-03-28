@@ -18,6 +18,8 @@ type Submission struct{
 	DateCreated   int64  `json:"dateCreated"`
 }
 
+type Submissions []Submission
+
 func GetSubmission(id string) (*Submission, error) {
 	db := connectToDB()
 	defer db.Close()
@@ -76,6 +78,56 @@ func InsertSubmission(requestBody []byte, collectionId string) (*Submission, err
 	submission.Data         = data
 
 	return &submission, nil
+}
+
+func DeleteSubmission(submissionId string) (error) {
+	db := connectToDB(); defer db.Close()
+
+	stmt, _ := db.Prepare("DELETE FROM submissions WHERE id = ?")
+	result, err  := stmt.Exec(submissionId)
+
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return errors.New(fmt.Sprintf("%s not found. No records removed.", submissionId))
+	}
+
+	return nil
+}
+
+func GetSubmissions(collectionId string) (*Submissions, error) {
+	db := connectToDB()
+	defer db.Close()
+
+	submissions := make(Submissions, 0)
+
+	rows, err := db.Query("SELECT `id`, `title`, `dateCreated` FROM submissions WHERE collectionId =?", collectionId)
+
+	if err != nil {
+		return &submissions, err
+	}
+
+	for rows.Next() {
+		var submission Submission
+
+		rows.Scan(
+			&submission.ID,
+			&submission.Title,
+			&submission.DateCreated,
+		)
+
+		submissions = append(submissions, submission)
+	}
+
+	return &submissions, nil
 }
 
 func hasCollectionId(collectionId string) bool {

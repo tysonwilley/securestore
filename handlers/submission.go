@@ -46,3 +46,16 @@ func PostSubmissionAction(w http.ResponseWriter, request *http.Request) {
 
 	buildResponse(w, APIPayload{"status": "success", "data": data}, http.StatusOK)
 }
+
+func DeleteSubmissionAction(w http.ResponseWriter, request *http.Request) {
+	vars := mux.Vars(request)
+
+	err := models.DeleteSubmission(vars["submissionId"])
+
+	if err != nil {
+		buildResponse(w, APIPayload{"status": "error", "message": err.Error()}, http.StatusBadRequest)
+		return
+	}
+
+	buildResponse(w, APIPayload{"status": "success"}, http.StatusOK)
+}
